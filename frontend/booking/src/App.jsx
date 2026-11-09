@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import WhatsApp  from  "./components/WhatsApp";
-import "./App.css";
+
 import HomePage from "./Pages/HomePage";
 import AllRooms from "./Pages/AllRooms";
 import Booking from "./Pages/Booking";
@@ -11,6 +11,10 @@ import FAQ from "./components/FAQ";
 import AboutUs from "./Pages/AboutUs"
 import Mpesa from "./components/Mpesa"
 import Footer from "./components/Footer"
+import Dashboard from "./Pages/Dashboard"
+import Contact from "./Pages/Contact";
+import ForgotPassword from "./components/ForgotPassword";
+
 
 function App() {
   return (
@@ -28,6 +32,9 @@ function App() {
           <Route path="/footer" element={<Footer/>}/>
           <Route path="/aboutus" element={<AboutUs/>}/>
           <Route path="/mpesa" element={<Mpesa/>}/>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
       </div>
     </Router>

@@ -1,57 +1,72 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation(); // Get the current path
+  const location = useLocation();
+
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "About Us", path: "/aboutus" },
+    { name: "All Rooms", path: "/allrooms" },
+    { name: "Book Now", path: "/booking" },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Contact", path: "/contact" },
+    { name: "Login", path: "/login" },
+    { name: "Sign Up", path: "/signup" },
+    {name: "ForgotPassword", path: "/forgotpassword"}
+  ];
 
   return (
     <>
-      {/* Contact Section Above Navbar */}
-      <div className="bg-blue-800 text-white py-2 text-center md:flex md:justify-between md:items-center md:px-10">
-        <div className="flex justify-center md:justify-start space-x-4">
-          <span className="flex items-center space-x-2">
+      
+      <div className="bg-blue-900 text-white py-2 px-4 md:px-10">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+
+          <span className="flex items-center gap-2">
             <MapPin size={18} />
-            <p>Zara homes</p>
+            <p>Zara Homes and Villas</p>
           </span>
-        </div>
-        <div className="flex justify-center md:justify-end space-x-6">
-          <span className="flex items-center space-x-2">
-            <Phone size={18} />
-            <p>+254 742 134 656</p>
-          </span>
-          <span className="flex items-center space-x-2">
-            <Mail size={18} />
-            <p>info@zarahomes.com</p>
-          </span>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+            <span className="flex items-center gap-2">
+              <Phone size={18} />
+              <p>+254 742 134 656</p>
+            </span>
+
+            <span className="flex items-center gap-2">
+              <Mail size={18} />
+              <p>info@zarahomes.com</p>
+            </span>
+          </div>
+
         </div>
       </div>
 
-      {/* Navbar */}
-      <nav className="bg-blue-600 text-white shadow-lg">
-        <div className="container mx-auto flex justify-between items-center py-4 px-10">
-          <Link to="/" className="text-2xl font-bold tracking-wide">
-           zara homes
+      
+      
+      <nav className="bg-blue-700 text-white shadow-lg">
+        <div className="container mx-auto flex justify-between items-center py-4 px-4 md:px-10">
+
+          
+          <Link
+            to="/"
+            className="text-2xl font-bold tracking-wide"
+            onClick={() => setIsOpen(false)}
+          >
+            Zara Homes
           </Link>
 
-          {/* Desktop Menu - Centered */}
-          <div className="hidden md:flex flex-grow justify-center">
-            <ul className="flex space-x-6">
-              {[
-                { name: "Home", path: "/" },
-                { name: "AboutUs", path: "/AboutUs" },
-                { name: "Dashboard", path: "/dashboard" },
-                { name: "All Rooms", path: "/AllRooms " },
-                { name: "Book Now", path: "/Booking" },
-               { name: "Contact", path: "/Contact" },
-               { name: "Login", path: "/Login"},
-               { name: "SignUp", path: "/SignUp"},
-              ].map((item) => (
-                <li key={item.path} className="relative">
+          
+          <div className="hidden lg:flex flex-1 justify-center">
+            <ul className="flex items-center gap-5">
+              {navLinks.map((item) => (
+                <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`hover:text-gray-300 transition ${
+                    className={`transition hover:text-blue-200 ${
                       location.pathname === item.path
                         ? "border-b-2 border-white pb-1"
                         : ""
@@ -64,35 +79,26 @@ function Navbar() {
             </ul>
           </div>
 
-          {/* Mobile Menu Button */}
+         
           <button
-            className="md:hidden focus:outline-none"
+            className="lg:hidden focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        
         {isOpen && (
-          <ul className="md:hidden bg-blue-700 py-4 text-center space-y-4">
-            {[
-              { name: "Home", path: "/" },
-              { name: "AboutUs", path: "/AboutUs" },
-              { name: "", path: "/admissions" },
-              { name: "Dashboard", path: "/dashboard" },
-              { name: "All Rooms", path: "/AllRooms" },
-                { name: "Book Now", path: "/Booking" },
-                { name: "Contact", path: "/Contact" },
-                { name: "Login", path: "/Login"},
-                 { name: "SignUp", path: "/SignUp"},
-            ].map((item) => (
+          <ul className="lg:hidden bg-blue-800 py-4 text-center space-y-4">
+            {navLinks.map((item) => (
               <li key={item.path}>
                 <Link
                   to={item.path}
-                  className={`block hover:text-gray-300 ${
+                  className={`block py-1 hover:text-blue-200 ${
                     location.pathname === item.path
-                      ? "border-b-2 border-white pb-1"
+                      ? "font-bold text-white"
                       : ""
                   }`}
                   onClick={() => setIsOpen(false)}
@@ -106,6 +112,6 @@ function Navbar() {
       </nav>
     </>
   );
-};
+}
 
 export default Navbar;

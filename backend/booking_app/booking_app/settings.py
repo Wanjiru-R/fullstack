@@ -24,14 +24,15 @@ SECRET_KEY = 'django-insecure-^&9ebnp+7t2_@y3-!e%sv0f%a*stvruj0%bh^ilm6k^w0(n=)5
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = [
-     "localhost",
+    "localhost",
     "127.0.0.1",
-    ".ngrok-free.app",
-    
+    "acre-video-vast-baptist.trycloudflare.com",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.trycloudflare.com",
+]
 
 # Application definition
 
@@ -172,11 +173,12 @@ load_dotenv()
 
 
 MPESA_ENV = os.getenv("MPESA_ENV", "sandbox")  # or "production"
-MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")
-MPESA_CONSUMER_SECRET = os.getenv("MPESA_CONSUMER_SECRET")
-MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")  # sandbox: 174379
+CONSUMER_KEY = os.getenv("CONSUMER_KEY")
+CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
+SHORT_CODE = os.getenv("SHORT_CODE")  # sandbox: 174379
+MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
 MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
-MPESA_CALLBACK_URL = os.getenv("MPESA_CALLBACK_URL")
+CALLBACK_URL = os.getenv("CALLBACK_URL")
 # For offline serving:
 # MEDIA_URL = '/media/'  # URL path for media files
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory to store media files
@@ -203,10 +205,32 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 import dj_database_url
-database_url = os.environ.get("DATABASE_URL")
-DATABASES['default'] = dj_database_url.parse(database_url)
 
+database_url = os.getenv("DATABASE_URL", "").strip()
 
-DEBUG = os.environ.get("DEBUG","False").lower() == "true"
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
-SECRET_KEY = os.environ.get("SECRET_KEY")
+if database_url and database_url not in ("b''", 'b""'):
+    DATABASES = {
+        "default": dj_database_url.parse(
+            database_url,
+            conn_max_age=600,
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost 127.0.0.1 acre-video-vast-baptist.trycloudflare.com"
+).split()
+
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    SECRET_KEY
+)

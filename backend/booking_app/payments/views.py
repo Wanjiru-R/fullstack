@@ -1,5 +1,6 @@
 # from django.shortcuts import render
 
+
 # import requests, base64, json, re, os
 # from datetime import datetime
 # from django.shortcuts import render, redirect
@@ -7,10 +8,20 @@
 # from django.http import JsonResponse, HttpResponseBadRequest
 # from .models import Payment
 
+import requests, base64, json, re, os
+from datetime import datetime
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse, HttpResponseBadRequest
+from .models import Payment
+from decimal import Decimal, InvalidOperation
+
+
 # from dotenv import load_dotenv
 
 
 # load_dotenv()
+
 
 
 # CONSUMER_KEY = os.getenv("CONSUMER_KEY")
@@ -20,6 +31,14 @@
 # MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
 # CALLBACK_URL = os.getenv("CALLBACK_URL")
 # MPESA_BASE_URL = os.getenv("MPESA_BASE_URL")
+
+CONSUMER_KEY = os.getenv("CONSUMER_KEY")
+CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
+MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
+MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
+SHORTCODE = os.getenv("SHORTCODE")
+CALLBACK_URL = os.getenv("CALLBACK_URL")
+MPESA_BASE_URL = os.getenv("MPESA_BASE_URL")
 
 
 # def format_phone_number(phone):
@@ -175,3 +194,4 @@
 
 #     except (json.JSONDecodeError, KeyError) as e:
 #         return HttpResponseBadRequest(f"Invalid request data: {str(e)}")
+

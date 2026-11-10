@@ -155,8 +155,8 @@ AUTHENTICATION_BACKENDS = ['Room_booking.auth_backend.EmailBackend']
 #     'https://booking-app-nine-ruby.vercel.app',
 # ]
 CORS_ALLOWED_ORIGINS = [
-    # "http://127.0.0.1:5173",
-    # "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
     #vercel
 
 ]

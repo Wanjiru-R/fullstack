@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import WhatsApp  from  "./components/WhatsApp";
+import WhatsApp  from  "./components/WhatsApp";
 
 import HomePage from "./Pages/HomePage";
 import AllRooms from "./Pages/AllRooms";
@@ -23,6 +23,7 @@ function App() {
         < Navbar/>
         
       <Routes>
+        
           <Route path="/" element={<HomePage />} />
           <Route path="/allrooms" element={<AllRooms/>}/>
           <Route path="/faq" element={<FAQ/>}/>
@@ -34,6 +35,7 @@ function App() {
           <Route path="/mpesa" element={<Mpesa/>}/>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/whatsapp" element={<WhatsApp/>}/>
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
       </div>

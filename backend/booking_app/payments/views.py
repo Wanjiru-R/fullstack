@@ -1,177 +1,177 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
-import requests, base64, json, re, os
-from datetime import datetime
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse, HttpResponseBadRequest
-from .models import Payment
+# import requests, base64, json, re, os
+# from datetime import datetime
+# from django.shortcuts import render, redirect
+# from django.views.decorators.csrf import csrf_exempt
+# from django.http import JsonResponse, HttpResponseBadRequest
+# from .models import Payment
 
-from dotenv import load_dotenv
-
-
-load_dotenv()
+# from dotenv import load_dotenv
 
 
-CONSUMER_KEY = os.getenv("CONSUMER_KEY")
-CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
-MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
-
-MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
-CALLBACK_URL = os.getenv("CALLBACK_URL")
-MPESA_BASE_URL = os.getenv("MPESA_BASE_URL")
+# load_dotenv()
 
 
-def format_phone_number(phone):
-    phone = phone.replace("+", "")
-    if re.match(r"^254\d{9}$", phone):
-        return phone
-    elif phone.startswith("0") and len(phone) == 10:
-        return "254" + phone[1:]
-    else:
-        raise ValueError("Invalid phone number format")
+# CONSUMER_KEY = os.getenv("CONSUMER_KEY")
+# CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
+# MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
+
+# MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
+# CALLBACK_URL = os.getenv("CALLBACK_URL")
+# MPESA_BASE_URL = os.getenv("MPESA_BASE_URL")
 
 
-def generate_access_token():
-    try:
-        credentials = f"{CONSUMER_KEY}:{CONSUMER_SECRET}"
-        encoded_credentials = base64.b64encode(credentials.encode()).decode()
-
-        headers = {
-            "Authorization": f"Basic {encoded_credentials}",
-            "Content-Type": "application/json",
-        }
-        response = requests.get(
-            f"{MPESA_BASE_URL}/oauth/v1/generate?grant_type=client_credentials",
-            headers=headers,
-        ).json()
-
-        if "access_token" in response:
-            return response["access_token"]
-        else:
-            raise Exception("Access token missing in response.")
-
-    except requests.RequestException as e:
-        raise Exception(f"Failed to connect to M-Pesa: {str(e)}")
+# def format_phone_number(phone):
+#     phone = phone.replace("+", "")
+#     if re.match(r"^254\d{9}$", phone):
+#         return phone
+#     elif phone.startswith("0") and len(phone) == 10:
+#         return "254" + phone[1:]
+#     else:
+#         raise ValueError("Invalid phone number format")
 
 
-def initiate_stk_push(phone, amount):
-    try:
-        token = generate_access_token()
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+# def generate_access_token():
+#     try:
+#         credentials = f"{CONSUMER_KEY}:{CONSUMER_SECRET}"
+#         encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        stk_password = base64.b64encode(
-            (MPESA_SHORTCODE + MPESA_PASSKEY + timestamp).encode()
-        ).decode()
+#         headers = {
+#             "Authorization": f"Basic {encoded_credentials}",
+#             "Content-Type": "application/json",
+#         }
+#         response = requests.get(
+#             f"{MPESA_BASE_URL}/oauth/v1/generate?grant_type=client_credentials",
+#             headers=headers,
+#         ).json()
 
-        request_body = {
-            "BusinessShortCode": MPESA_SHORTCODE,
-            "Password": stk_password,
-            "Timestamp": timestamp,
-            "TransactionType": "CustomerPayBillOnline",
-            "Amount": amount,
-            "PartyA": phone,
-            "PartyB": MPESA_SHORTCODE,
-            "PhoneNumber": phone,
-            "CallBackURL": CALLBACK_URL,
-            "AccountReference": "account",
-            "TransactionDesc": "Payment for goods",
-        }
+#         if "access_token" in response:
+#             return response["access_token"]
+#         else:
+#             raise Exception("Access token missing in response.")
 
-        response = requests.post(
-            f"{MPESA_BASE_URL}/mpesa/stkpush/v1/processrequest",
-            json=request_body,
-            headers=headers,
-        ).json()
-
-        return response
-
-    except Exception as e:
-        print(f"Failed to initiate STK Push: {str(e)}")
-        return e
+#     except requests.RequestException as e:
+#         raise Exception(f"Failed to connect to M-Pesa: {str(e)}")
 
 
+# def initiate_stk_push(phone, amount):
+#     try:
+#         token = generate_access_token()
+#         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
-def query_stk_push(checkout_request_id):
-    print("Quering...")
-    try:
-        token = generate_access_token()
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+#         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+#         stk_password = base64.b64encode(
+#             (MPESA_SHORTCODE + MPESA_PASSKEY + timestamp).encode()
+#         ).decode()
 
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        password = base64.b64encode(
-            (MPESA_SHORTCODE + MPESA_PASSKEY + timestamp).encode()
-        ).decode()
+#         request_body = {
+#             "BusinessShortCode": MPESA_SHORTCODE,
+#             "Password": stk_password,
+#             "Timestamp": timestamp,
+#             "TransactionType": "CustomerPayBillOnline",
+#             "Amount": amount,
+#             "PartyA": phone,
+#             "PartyB": MPESA_SHORTCODE,
+#             "PhoneNumber": phone,
+#             "CallBackURL": CALLBACK_URL,
+#             "AccountReference": "account",
+#             "TransactionDesc": "Payment for goods",
+#         }
 
-        request_body = {
-            "BusinessShortCode": MPESA_SHORTCODE,
-            "Password": password,
-            "Timestamp": timestamp,
-            "CheckoutRequestID": checkout_request_id
-        }
+#         response = requests.post(
+#             f"{MPESA_BASE_URL}/mpesa/stkpush/v1/processrequest",
+#             json=request_body,
+#             headers=headers,
+#         ).json()
 
-        response = requests.post(
-            f"{MPESA_BASE_URL}/mpesa/stkpushquery/v1/query",
-            json=request_body,
-            headers=headers,
-        )
-        print(response.json())
-        return response.json()
+#         return response
 
-    except requests.RequestException as e:
-        print(f"Error querying STK status: {str(e)}")
-        return {"error": str(e)}
+#     except Exception as e:
+#         print(f"Failed to initiate STK Push: {str(e)}")
+#         return e
 
-# View to query the STK status and return it to the frontend
-def stk_status_view(request):
-    if request.method == 'POST':
-        try:
-            # Parse the JSON body
-            data = json.loads(request.body)
-            checkout_request_id = data.get('checkout_request_id')
-            print("CheckoutRequestID:", checkout_request_id)
 
-            # Query the STK push status using your backend function
-            status = query_stk_push(checkout_request_id)
 
-            # Return the status as a JSON response
-            return JsonResponse({"status": status})
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON body"}, status=400)
+# def query_stk_push(checkout_request_id):
+#     print("Quering...")
+#     try:
+#         token = generate_access_token()
+#         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+#         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+#         password = base64.b64encode(
+#             (MPESA_SHORTCODE + MPESA_PASSKEY + timestamp).encode()
+#         ).decode()
 
-@csrf_exempt  # To allow POST requests from external sources like M-Pesa
-def payment_callback(request):
-    if request.method != "POST":
-        return HttpResponseBadRequest("Only POST requests are allowed")
+#         request_body = {
+#             "BusinessShortCode": MPESA_SHORTCODE,
+#             "Password": password,
+#             "Timestamp": timestamp,
+#             "CheckoutRequestID": checkout_request_id
+#         }
 
-    try:
-        callback_data = json.loads(request.body)  # Parse the request body
-        result_code = callback_data["Body"]["stkCallback"]["ResultCode"]
+#         response = requests.post(
+#             f"{MPESA_BASE_URL}/mpesa/stkpushquery/v1/query",
+#             json=request_body,
+#             headers=headers,
+#         )
+#         print(response.json())
+#         return response.json()
 
-        if result_code == 0:
-            # Successful transaction
-            checkout_id = callback_data["Body"]["stkCallback"]["CheckoutRequestID"]
-            metadata = callback_data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
+#     except requests.RequestException as e:
+#         print(f"Error querying STK status: {str(e)}")
+#         return {"error": str(e)}
 
-            amount = next(item["Value"] for item in metadata if item["Name"] == "Amount")
-            mpesa_code = next(item["Value"] for item in metadata if item["Name"] == "MpesaReceiptNumber")
-            phone = next(item["Value"] for item in metadata if item["Name"] == "PhoneNumber")
+# # View to query the STK status and return it to the frontend
+# def stk_status_view(request):
+#     if request.method == 'POST':
+#         try:
+#             # Parse the JSON body
+#             data = json.loads(request.body)
+#             checkout_request_id = data.get('checkout_request_id')
+#             print("CheckoutRequestID:", checkout_request_id)
 
-            # Save transaction to the database
-            Transaction.objects.create(
-                amount=amount, 
-                checkout_id=checkout_id, 
-                mpesa_code=mpesa_code, 
-                phone_number=phone, 
-                status="Success"
-            )
-            return JsonResponse({"ResultCode": 0, "ResultDesc": "Payment successful"})
+#             # Query the STK push status using your backend function
+#             status = query_stk_push(checkout_request_id)
 
-        # Payment failed
-        return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment failed"})
+#             # Return the status as a JSON response
+#             return JsonResponse({"status": status})
+#         except json.JSONDecodeError:
+#             return JsonResponse({"error": "Invalid JSON body"}, status=400)
 
-    except (json.JSONDecodeError, KeyError) as e:
-        return HttpResponseBadRequest(f"Invalid request data: {str(e)}")
+#     return JsonResponse({"error": "Invalid request method"}, status=405)
+
+# @csrf_exempt  # To allow POST requests from external sources like M-Pesa
+# def payment_callback(request):
+#     if request.method != "POST":
+#         return HttpResponseBadRequest("Only POST requests are allowed")
+
+#     try:
+#         callback_data = json.loads(request.body)  # Parse the request body
+#         result_code = callback_data["Body"]["stkCallback"]["ResultCode"]
+
+#         if result_code == 0:
+#             # Successful transaction
+#             checkout_id = callback_data["Body"]["stkCallback"]["CheckoutRequestID"]
+#             metadata = callback_data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
+
+#             amount = next(item["Value"] for item in metadata if item["Name"] == "Amount")
+#             mpesa_code = next(item["Value"] for item in metadata if item["Name"] == "MpesaReceiptNumber")
+#             phone = next(item["Value"] for item in metadata if item["Name"] == "PhoneNumber")
+
+#             # Save transaction to the database
+#             Transaction.objects.create(
+#                 amount=amount, 
+#                 checkout_id=checkout_id, 
+#                 mpesa_code=mpesa_code, 
+#                 phone_number=phone, 
+#                 status="Success"
+#             )
+#             return JsonResponse({"ResultCode": 0, "ResultDesc": "Payment successful"})
+
+#         # Payment failed
+#         return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment failed"})
+
+#     except (json.JSONDecodeError, KeyError) as e:
+#         return HttpResponseBadRequest(f"Invalid request data: {str(e)}")

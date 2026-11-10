@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponseBadRequest
 from .models import Payment
+from decimal import Decimal, InvalidOperation
 
 from dotenv import load_dotenv
 
@@ -15,9 +16,9 @@ load_dotenv()
 
 CONSUMER_KEY = os.getenv("CONSUMER_KEY")
 CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
-MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
-
 MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
+MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
+SHORTCODE = os.getenv("SHORTCODE")
 CALLBACK_URL = os.getenv("CALLBACK_URL")
 MPESA_BASE_URL = os.getenv("MPESA_BASE_URL")
 
@@ -142,36 +143,119 @@ def stk_status_view(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-@csrf_exempt  # To allow POST requests from external sources like M-Pesa
+@csrf_exempt # This view is called by M-Pesa when the payment process is completed (either success or failure)
 def payment_callback(request):
     if request.method != "POST":
-        return HttpResponseBadRequest("Only POST requests are allowed")
+        return JsonResponse({"error": "POST required"}, status=405)
 
     try:
-        callback_data = json.loads(request.body)  # Parse the request body
-        result_code = callback_data["Body"]["stkCallback"]["ResultCode"]
+        callback_data = json.loads(request.body)
+        stk_callback = callback_data["Body"]["stkCallback"]
+
+        checkout_id = stk_callback["CheckoutRequestID"]
+        result_code = stk_callback["ResultCode"]
+        result_desc = stk_callback.get("ResultDesc", "")
+
+        payment = Payment.objects.filter(
+            checkout_request_id=checkout_id
+        ).first()
+
+        if not payment:
+            return JsonResponse({
+                "ResultCode": 0,
+                "ResultDesc": "Callback received; payment record not found"
+            })
 
         if result_code == 0:
-            # Successful transaction
-            checkout_id = callback_data["Body"]["stkCallback"]["CheckoutRequestID"]
-            metadata = callback_data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
+            metadata = stk_callback.get("CallbackMetadata", {}).get("Item", [])
 
-            amount = next(item["Value"] for item in metadata if item["Name"] == "Amount")
-            mpesa_code = next(item["Value"] for item in metadata if item["Name"] == "MpesaReceiptNumber")
-            phone = next(item["Value"] for item in metadata if item["Name"] == "PhoneNumber")
+            values = {
+                item["Name"]: item.get("Value")
+                for item in metadata
+            }
 
-            # Save transaction to the database
-            Transaction.objects.create(
-                amount=amount, 
-                checkout_id=checkout_id, 
-                mpesa_code=mpesa_code, 
-                phone_number=phone, 
-                status="Success"
+            payment.amount = values.get("Amount", payment.amount)
+            payment.mpesa_receipt_number = values.get("MpesaReceiptNumber")
+            payment.phone_number = str(
+                values.get("PhoneNumber", payment.phone_number)
             )
-            return JsonResponse({"ResultCode": 0, "ResultDesc": "Payment successful"})
+            payment.status = Payment.StatusChoices.COMPLETED
 
-        # Payment failed
-        return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment failed"})
+        else:
+            payment.status = Payment.StatusChoices.FAILED
 
-    except (json.JSONDecodeError, KeyError) as e:
-        return HttpResponseBadRequest(f"Invalid request data: {str(e)}")
+        payment.save()
+
+        return JsonResponse({
+            "ResultCode": 0,
+            "ResultDesc": "Callback processed successfully"
+        })
+
+    except (json.JSONDecodeError, KeyError, TypeError) as e:
+        return JsonResponse({
+            "ResultCode": 1,
+            "ResultDesc": f"Invalid callback data: {str(e)}"
+        }, status=400)
+     
+@csrf_exempt
+def payment_view(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST requests are allowed"}, status=405)
+
+    try:
+        if request.content_type == "application/json":
+            data = json.loads(request.body)
+        else:
+            data = request.POST
+
+        phone = format_phone_number(data.get("phone", ""))
+        amount = Decimal(str(data.get("amount", "")))
+
+        if amount <= 0 or amount != amount.to_integral_value():
+            return JsonResponse(
+                {"error": "Amount must be a positive whole number"},
+                status=400
+            )
+
+        response = initiate_stk_push(phone, int(amount))
+
+        if not isinstance(response, dict):
+            return JsonResponse(
+                {"error": "Could not communicate with M-Pesa"},
+                status=502
+            )
+
+        if response.get("ResponseCode") != "0":
+            return JsonResponse({
+                "error": "STK Push request was rejected",
+                "details": response
+            }, status=400)
+
+        checkout_id = response.get("CheckoutRequestID")
+
+        if not checkout_id:
+            return JsonResponse({
+                "error": "M-Pesa did not return a CheckoutRequestID",
+                "details": response
+            }, status=502)
+
+        payment = Payment.objects.create(
+            phone_number=phone,
+            amount=amount,
+            checkout_request_id=checkout_id,
+            merchant_request_id=response.get("MerchantRequestID"),
+            status=Payment.StatusChoices.PENDING
+        )
+
+        return JsonResponse({
+            "message": "STK Push sent. Check your phone.",
+            "payment_id": payment.id,
+            "checkout_request_id": checkout_id,
+            "customer_message": response.get("CustomerMessage")
+        })
+
+    except (ValueError, InvalidOperation, json.JSONDecodeError) as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

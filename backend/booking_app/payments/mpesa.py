@@ -24,7 +24,7 @@ def normalize_phone(phone: str) -> str:
 def get_token() -> str:
     r = requests.get(
         f"{BASE}/oauth/v1/generate?grant_type=client_credentials",
-        auth=(settings.MPESA_CONSUMER_KEY, settings.MPESA_CONSUMER_SECRET),
+        auth=(settings.CONSUMER_KEY, settings.CONSUMER_SECRET),
         timeout=30,
     )
     r.raise_for_status()
@@ -46,7 +46,7 @@ def stk_push(phone: str, amount: int, reference: str) -> dict:
         "PartyA": phone,
         "PartyB": settings.MPESA_SHORTCODE,
         "PhoneNumber": phone,
-        "CallBackURL": settings.MPESA_CALLBACK_URL,
+        "CallBackURL": settings.CALLBACK_URL,
         "AccountReference": reference,
         "TransactionDesc": "Booking payment",
     }

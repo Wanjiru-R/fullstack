@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,9 +31,10 @@ ALLOWED_HOSTS = [
     "acre-video-vast-baptist.trycloudflare.com",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.trycloudflare.com",
-]
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://*.trycloudflare.com http://localhost:5173 http://127.0.0.1:5173",
+).split()
 
 # Application definition
 
@@ -156,10 +158,18 @@ AUTHENTICATION_BACKENDS = ['Room_booking.auth_backend.EmailBackend']
 #     'https://booking-app-nine-ruby.vercel.app',
 # ]
 CORS_ALLOWED_ORIGINS = [
+docker
+    origin
+    for origin in os.getenv(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173 http://127.0.0.1:5173",
+    ).split()
+
     "http://127.0.0.1:5173",
     "http://localhost:5173",
     #vercel
 
+ main
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = [
@@ -167,7 +177,6 @@ CORS_EXPOSE_HEADERS = [
     "Authorization",
 ]
 ROOT_URLCONF = 'booking_app.urls'
-import os
 from dotenv import load_dotenv
 load_dotenv()
 

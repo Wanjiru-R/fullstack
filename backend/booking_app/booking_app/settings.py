@@ -162,14 +162,14 @@ docker
     origin
     for origin in os.getenv(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:5173 http://127.0.0.1:5173",
+        "http://localhost:5173 http://127.0.0.1:8000",
     ).split()
 
-    "http://127.0.0.1:5173",
+    "http://127.0.0.1:8000",
     "http://localhost:5173",
     #vercel
 
- main
+
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = [
@@ -198,16 +198,16 @@ import cloudinary.uploader
 
 # Cloudinary configuration
 cloudinary.config(
-    cloud_name="gyyprvd8",
-    api_key= "382463756878716",
-    api_secret="T81Mj89H-m0zplm5xWwPwbTFzro",
+    cloud_name=os.getenv("cloud_name"),
+    api_key= os.getenv("api_key"),
+    api_secret=os.getenv("api_secret"),
     secure=True,
 )
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': "gyyprvd8",
-    'API_KEY': '382463756878716',
-    'API_SECRET': 'T81Mj89H-m0zplm5xWwPwbTFzro',
+    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
+    'API_KEY': os.getenv("API_KEY"),
+    'API_SECRET': os.getenv("API_SECRET"),
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

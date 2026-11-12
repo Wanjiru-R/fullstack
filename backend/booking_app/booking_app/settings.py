@@ -158,11 +158,18 @@ AUTHENTICATION_BACKENDS = ['Room_booking.auth_backend.EmailBackend']
 #     'https://booking-app-nine-ruby.vercel.app',
 # ]
 CORS_ALLOWED_ORIGINS = [
+docker
     origin
     for origin in os.getenv(
         "CORS_ALLOWED_ORIGINS",
         "http://localhost:5173 http://127.0.0.1:5173",
     ).split()
+
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    #vercel
+
+ main
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = [

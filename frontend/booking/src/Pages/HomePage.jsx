@@ -4,6 +4,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Helmet } from "react-helmet";
 import FAQ from "../components/FAQ";
+import WhatsApp from "../components/WhatsApp"
 import Ratings from "../components/Ratings";
 import Footer from "../components/Footer";
 
@@ -474,7 +475,7 @@ const HomePage = () => {
 
         <div className="flex flex-wrap justify-center gap-4">
           <Link
-            to="/booking"
+            to="/Booking"
             className="rounded-full bg-white px-9 py-4 font-bold text-sky-800 transition hover:bg-sky-100"
           >
             Book Your Stay
@@ -488,7 +489,7 @@ const HomePage = () => {
           </Link>
         </div>
       </section>
-
+            <WhatsApp/>
       
       <FAQ />
 

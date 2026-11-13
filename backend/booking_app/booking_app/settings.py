@@ -92,8 +92,15 @@ WSGI_APPLICATION = 'booking_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'booking_db',
+        'USER': 'booking_user',
+        'PASSWORD': 'admin',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -155,22 +162,19 @@ AUTHENTICATION_BACKENDS = ['Room_booking.auth_backend.EmailBackend']
 
 # CSRF_TRUSTED_ORIGINS = [
 #     'https://booking-app-backend-gqr0.onrender.com',
-#     'https://booking-app-nine-ruby.vercel.app',
+
 # ]
 CORS_ALLOWED_ORIGINS = [
-docker
-    origin
+    origin.strip()
     for origin in os.getenv(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:5173 http://127.0.0.1:8000",
-    ).split()
-
-    "http://127.0.0.1:8000",
-    "http://localhost:5173",
-    #vercel
-
-
+        "http://localhost:5173,http://127.0.0.1:8000"
+    ).split(",")
+    if origin.strip()
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = [
     "Content-Type",
@@ -189,8 +193,8 @@ MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
 MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
 CALLBACK_URL = os.getenv("CALLBACK_URL")
 # For offline serving:
-# MEDIA_URL = '/media/'  # URL path for media files
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory to store media files
+MEDIA_URL = '/media/'  # URL path for media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory to store media files
 
 import cloudinary
 import cloudinary.api
@@ -226,12 +230,18 @@ if database_url and database_url not in ("b''", 'b""'):
     }
 else:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'booking_db',
+        'USER': 'booking_user',
+        'PASSWORD': 'admin',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
-
+}
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv(

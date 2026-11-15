@@ -1,0 +1,94 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "DM Sans", sans-serif;
+  --font-heading: "Manrope", sans-serif;
+
+  --color-brand: #173b5e;
+  --color-brand-mid: #285b7a;
+  --color-brand-soft: #e3edf5;
+  --color-ink: #172b3a;
+}
+
+/* Base Styles */
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #172b3a;
+  background: #f7f9fc;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  scroll-behavior: smooth;
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+/* Form Elements */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Text Selection */
+::selection {
+  background: #c8dceb;
+  color: #173b5e;
+}
+
+/* Dark Mode */
+.dark body {
+  background: #0d1926;
+  color: #eef4f8;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Scroll Positioning */
+html {
+  scroll-padding-top: 90px;
+}
+
+section[id] {
+  scroll-margin-top: 88px;
+}
+
+/* Keyboard Accessibility */
+:focus-visible {
+  outline: 2px solid #6d9fc3;
+  outline-offset: 3px;
+}
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

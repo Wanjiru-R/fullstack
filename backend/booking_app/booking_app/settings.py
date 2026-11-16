@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+<<<<<<< HEAD
 
 import os
 import cloudinary
@@ -41,6 +42,14 @@ render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 
 if render_host:
     ALLOWED_HOSTS.append(render_host)
+=======
+from pathlib import Path
+import os
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+>>>>>>> b34f51e274439ac05f38b383fdb7caee9e5f09fd
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
@@ -84,7 +93,10 @@ AUTH_USER_MODEL = 'Room_booking.User'
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+<<<<<<< HEAD
     "whitenoise.middleware.WhiteNoiseMiddleware",
+=======
+>>>>>>> b34f51e274439ac05f38b383fdb7caee9e5f09fd
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -117,6 +129,7 @@ WSGI_APPLICATION = 'booking_app.wsgi.application'
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
+<<<<<<< HEAD
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DB_NAME", "booking_db"),
@@ -126,6 +139,17 @@ DATABASES = {
         "PORT": os.environ.get("DB_PORT", "3306"),
         "OPTIONS": {
             "charset": "utf8mb4",
+=======
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'booking_db',
+        'USER': 'booking_user',
+        'PASSWORD': 'admin',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+>>>>>>> b34f51e274439ac05f38b383fdb7caee9e5f09fd
         },
     }
 }
@@ -207,8 +231,13 @@ CORS_EXPOSE_HEADERS = [
     "Authorization",
 ]
 ROOT_URLCONF = 'booking_app.urls'
+<<<<<<< HEAD
 
 
+=======
+from dotenv import load_dotenv
+load_dotenv()
+>>>>>>> b34f51e274439ac05f38b383fdb7caee9e5f09fd
 
 
 MPESA_ENV = os.getenv("MPESA_ENV", "sandbox")  # or "production"
@@ -222,6 +251,7 @@ CALLBACK_URL = os.getenv("CALLBACK_URL")
 MEDIA_URL = '/media/'  # URL path for media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory to store media files
 
+<<<<<<< HEAD
 
 import cloudinary.api
 import cloudinary.uploader
@@ -234,6 +264,26 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.getenv("CLOUDINARY_API_SECRET"),
 }
 print(">>> CLOUDINARY KEY AT STARTUP:", cloudinary.config().api_key)
+=======
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
+
+# Cloudinary configuration
+cloudinary.config(
+    cloud_name=os.getenv("cloud_name"),
+    api_key= os.getenv("api_key"),
+    api_secret=os.getenv("api_secret"),
+    secure=True,
+)
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
+    'API_KEY': os.getenv("API_KEY"),
+    'API_SECRET': os.getenv("API_SECRET"),
+}
+
+>>>>>>> b34f51e274439ac05f38b383fdb7caee9e5f09fd
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
@@ -250,6 +300,7 @@ if database_url and database_url not in ("b''", 'b""'):
     }
 else:
     DATABASES = {
+<<<<<<< HEAD
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DB_NAME", "booking_db"),
@@ -263,6 +314,20 @@ else:
     }
 }
 
+=======
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'booking_db',
+        'USER': 'booking_user',
+        'PASSWORD': 'admin',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
+    }
+}
+>>>>>>> b34f51e274439ac05f38b383fdb7caee9e5f09fd
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv(
@@ -273,5 +338,9 @@ ALLOWED_HOSTS = os.getenv(
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
     SECRET_KEY
+<<<<<<< HEAD
 )
 
+=======
+)
+>>>>>>> b34f51e274439ac05f38b383fdb7caee9e5f09fd

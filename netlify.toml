@@ -1,0 +1,5 @@
+
+[build]
+  base = "frontend/zarahomes"
+  command = "npm run build"
+  publish = "dist"

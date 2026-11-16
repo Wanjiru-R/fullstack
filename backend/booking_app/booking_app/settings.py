@@ -9,7 +9,9 @@ https://docs.djangoproject.com/en/6.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
-
+import pymysql
+pymysql.version_info = (2, 2, 1, "final", 0)  # satisfies Django's version check
+pymysql.install_as_MySQLdb()
 
 
 import os
@@ -133,18 +135,7 @@ DATABASES = {
         "OPTIONS": {
             "charset": "utf8mb4",
 
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'booking_db',
-        'USER': 'booking_user',
-        'PASSWORD': 'admin',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-
-        },
-    }
+    
 }
     }
 }

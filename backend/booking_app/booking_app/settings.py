@@ -247,23 +247,8 @@ CLOUDINARY_STORAGE = {
 }
 print(">>> CLOUDINARY KEY AT STARTUP:", cloudinary.config().api_key)
 
-import cloudinary
-import cloudinary.api
-import cloudinary.uploader
 
-# Cloudinary configuration
-cloudinary.config(
-    cloud_name=os.getenv("cloud_name"),
-    api_key= os.getenv("api_key"),
-    api_secret=os.getenv("api_secret"),
-    secure=True,
-)
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
-    'API_KEY': os.getenv("API_KEY"),
-    'API_SECRET': os.getenv("API_SECRET"),
-}
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 

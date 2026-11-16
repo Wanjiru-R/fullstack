@@ -18,3 +18,4 @@ COPY . .
 
 EXPOSE 8000
 
+CMD sh -c "python manage.py collectstatic --no-input && python manage.py migrate && gunicorn booking_app.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2"

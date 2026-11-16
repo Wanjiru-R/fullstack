@@ -123,21 +123,13 @@ WSGI_APPLICATION = 'booking_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+import dj_database_url
+
 DATABASES = {
-
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME", "booking_db"),
-        "USER": os.environ.get("DB_USER", "booking_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "3306"),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-
-    
-}
-    }
+    "default": dj_database_url.config(
+        env="DATABASE_URL",
+        conn_max_age=600,
+    )
 }
 
 # Password validation

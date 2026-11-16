@@ -1,11 +1,11 @@
-<<<<<<< HEAD
+
 node_modules/
 myenv/
 __pycache__/
 .env
 dist/
 *.sqlite3
-=======
+
 # Gradle files
 .gradle/
 build/

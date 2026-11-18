@@ -1,8 +1,17 @@
 
 
+<<<<<<< HEAD
 # import pymysql
 # pymysql.version_info = (2, 2, 1, "final", 0)  # satisfies Django's version check
 # pymysql.install_as_MySQLdb()
+=======
+For more information on this file, see
+https://docs.djangoproject.com/en/6.1/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/6.1/ref/settings/
+"""
+>>>>>>> b8ca3ee (add postgres)
 
 
 import os
@@ -29,6 +38,7 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "acre-video-vast-baptist.trycloudflare.com",
 ]
 
 render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
@@ -51,6 +61,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "acre-video-vast-baptist.trycloudflare.com",
 ]
+
+
 
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS",
@@ -118,8 +130,9 @@ import dj_database_url
 
 DATABASES = {
     "default": dj_database_url.config(
-        env="DATABASE_URL",
+        default= os.environ.get("DATABASE_URL"),
         conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
@@ -248,19 +261,12 @@ if database_url and database_url not in ("b''", 'b""'):
         )
     }
 else:
-    DATABASES = {
 
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME", "booking_db"),
-        "USER": os.environ.get("DB_USER", "booking_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "3306"),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
-    }
+    DATABASE = {
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+    )
 }
 
 

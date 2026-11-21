@@ -1,17 +1,15 @@
 
 
-<<<<<<< HEAD
-# import pymysql
-# pymysql.version_info = (2, 2, 1, "final", 0)  # satisfies Django's version check
-# pymysql.install_as_MySQLdb()
-=======
-For more information on this file, see
-https://docs.djangoproject.com/en/6.1/topics/settings/
 
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/6.1/ref/settings/
-"""
->>>>>>> b8ca3ee (add postgres)
+
+
+# For more information on this file, see
+# https://docs.djangoproject.com/en/6.1/topics/settings/
+
+# For the full list of settings and their values, see
+# https://docs.djangoproject.com/en/6.1/ref/settings/
+
+
 
 
 import os
@@ -55,7 +53,8 @@ if render_host:
 SECRET_KEY = 'django-insecure-^&9ebnp+7t2_@y3-!e%sv0f%a*stvruj0%bh^ilm6k^w0(n=)5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
@@ -133,6 +132,7 @@ DATABASES = {
         default= os.environ.get("DATABASE_URL"),
         conn_max_age=600,
         conn_health_checks=True,
+        ssl_require=os.environ.get("RENDER") == "true",
     )
 }
 
@@ -283,6 +283,3 @@ SECRET_KEY = os.getenv(
     "SECRET_KEY",
     SECRET_KEY
 )
-
-
-

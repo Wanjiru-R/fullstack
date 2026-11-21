@@ -3,13 +3,12 @@
 
 
 
+
 # For more information on this file, see
 # https://docs.djangoproject.com/en/6.1/topics/settings/
 
 # For the full list of settings and their values, see
 # https://docs.djangoproject.com/en/6.1/ref/settings/
-
-
 
 
 import os
